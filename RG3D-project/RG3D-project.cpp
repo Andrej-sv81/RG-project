@@ -30,6 +30,21 @@
 #include "headers/model.h"
 
 using namespace std;
+//  1. todo teksture za planete, asteroide, dashboard, skybox i imena u bledneru
+//  2. ucitaj planete i pozicije
+//  3. ucitaj asteroide i pozicije
+//  4. randomizuj rotacije
+//  5. ucitaj dsahboard: gornji donji, crosshair, overlay
+//  6. selekcija planete
+//  7. distanca od planete
+//  8. istrazivanje planete i game over
+//  9. unistenje od asteroid
+//  10.prikazivanje teksta
+//  11.resetovanje igre
+//  12.detalji
+//  13.dodatno
+
+
 
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
