@@ -30,12 +30,6 @@
     <None Include="shaders\dashboard.vert">
       <Filter>Source Files\ShaderFiles</Filter>
     </None>
-    <None Include="shaders\model.frag">
-      <Filter>Source Files\ShaderFiles</Filter>
-    </None>
-    <None Include="shaders\model.vert">
-      <Filter>Source Files\ShaderFiles</Filter>
-    </None>
     <None Include="shaders\skybox.frag">
       <Filter>Source Files\ShaderFiles</Filter>
     </None>
@@ -57,12 +51,27 @@
     <None Include="shaders\window.vert">
       <Filter>Source Files\ShaderFiles</Filter>
     </None>
+    <None Include="shaders\model.vert">
+      <Filter>Source Files\ShaderFiles</Filter>
+    </None>
+    <None Include="shaders\model.frag">
+      <Filter>Source Files\ShaderFiles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="headers\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="headers\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

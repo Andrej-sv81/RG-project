@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Assimp\assimp\include;C:\Users\User\source\libs\freetype-2.13.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Assimp\assimp\include;C:\Program Files\Assimp\assimp\build\include;C:\Users\User\source\libs\freetype-2.13.3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,7 +147,10 @@
     <None Include="shaders\window.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
+    <ClInclude Include="headers\camera.h" />
+    <ClInclude Include="headers\mesh.h" />
+    <ClInclude Include="headers\model.h" />
+    <ClInclude Include="headers\shader.h" />
     <ClInclude Include="headers\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
