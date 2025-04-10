@@ -75,4 +75,20 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\bottom_control.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\signature.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\top_control.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\WeirdScienceNbpRegular-qmBr.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
 </Project>

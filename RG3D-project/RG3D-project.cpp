@@ -30,15 +30,20 @@
 #include "headers/model.h"
 
 using namespace std;
-//  1. todo teksture za planete, asteroide, dashboard, skybox i imena u bledneru
+//  1. 
 //  2. ucitaj planete i pozicije
 //  3. ucitaj asteroide i pozicije
 //  4. randomizuj rotacije
+// 
+// 
 //  5. ucitaj dsahboard: gornji donji, crosshair, overlay
+// 
+// 
 //  6. selekcija planete
 //  7. distanca od planete
 //  8. istrazivanje planete i game over
 //  9. unistenje od asteroid
+// 
 //  10.prikazivanje teksta
 //  11.resetovanje igre
 //  12.detalji
@@ -239,7 +244,7 @@ int main(void)
     };
 
 
-    GLuint skyboxVAO, skyboxVBO;
+    unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
@@ -265,29 +270,27 @@ int main(void)
     // -----------
     //Model ourModel("models/various-planets/planets.blend");
     std::vector<Planet> planets = {
-        { Model("models/various-planets/p1/p1.obj"),   glm::vec3(0.0f, 0.0f, 2.0f),  glm::vec3(0.0f, 0.0f, 1.0f),  0.5f, glm::vec3(1.0f) },
-        { Model("models/various-planets/p2/p2.obj"),   glm::vec3(4.4f, 0.0f, 2.0f),  glm::vec3(0.7f, 1.0f, 0.0f),  1.0f, glm::vec3(1.0f) },
-        { Model("models/various-planets/p3/Planets.obj"), glm::vec3(0.4f, 4.5f, 0.0f), glm::vec3(0.3f, 0.5f, 0.3f),  0.33f, glm::vec3(3.5f) },
-        { Model("models/various-planets/p4/Planets.obj"), glm::vec3(6.4f, 8.5f, 0.0f), glm::vec3(0.8f, 0.2f, 0.1f),  0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p5/Planets.obj"), glm::vec3(8.4f, 3.5f, -2.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p6/Planets.obj"), glm::vec3(-8.4f, 1.5f, -12.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p7/Planets.obj"), glm::vec3(-8.4f, 1.5f, 12.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p8/Planets.obj"), glm::vec3(3.4f, 6.5f, 9.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p9/Planets.obj"), glm::vec3(1.4f, -3.5f, 9.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p10/Planets.obj"), glm::vec3(-3.4f, 2.5f, 6.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) },
-        { Model("models/various-planets/p11/Planets.obj"), glm::vec3(-4.7f, 10.5f, 8.0f), glm::vec3(1.8f, 0.2f, 0.1f), 0.5f, glm::vec3(1.5f) }
+        { Model("models/planets/p1/Planets.obj"),   glm::vec3(0.0f, 0.0f, -12.0f),  glm::vec3(0.0f, 0.0f, 1.0f),    0.5f,   glm::vec3(1.0f) },
+        { Model("models/planets/p2/Planets.obj"),   glm::vec3(4.4f, 0.0f, 2.0f),    glm::vec3(0.7f, 1.0f, 0.0f),    1.0f,   glm::vec3(1.0f) },
+        { Model("models/planets/p3/Planets.obj"),   glm::vec3(0.4f, 4.5f, 0.0f),    glm::vec3(0.3f, 0.5f, 0.3f),    0.33f,  glm::vec3(3.5f) },
+        { Model("models/planets/p4/Planets.obj"),   glm::vec3(6.4f, 8.5f, 0.0f),    glm::vec3(0.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        { Model("models/planets/p5/Planets.obj"),   glm::vec3(8.4f, 3.5f, -2.0f),   glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        { Model("models/planets/p6/Planets.obj"),   glm::vec3(-8.4f, 1.5f, -12.0f), glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        { Model("models/planets/p7/Planets.obj"),   glm::vec3(-8.4f, 1.5f, 12.0f),  glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        { Model("models/planets/p8/Planets.obj"),   glm::vec3(3.4f, 6.5f, 9.0f),    glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        { Model("models/planets/p9/Planets.obj"),   glm::vec3(1.4f, -3.5f, 9.0f),   glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
     };
 
     
     std::vector<std::string> faces = {
-        "textures/space_right.jpg",
-        "textures/space_left.jpg",
-        "textures/space_top.jpg",
-        "textures/space_bottom.jpg",
-        "textures/space_front.jpg",
-        "textures/space_back.jpg"
+        "textures/skybox/right.png",
+        "textures/skybox/left.png",
+        "textures/skybox/top.png",
+        "textures/skybox/bottom.png",
+        "textures/skybox/front.png",
+        "textures/skybox/back.png"
     };
-    GLuint cubemapTexture = loadCubemap(faces);
+    unsigned int cubemapTexture = loadCubemap(faces);
     skyboxShader.use();
     glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
 
@@ -333,7 +336,7 @@ int main(void)
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
 
-
+        ourShader.use();
         // render the loaded model
         for (Planet& planet : planets) {
             glm::mat4 model = glm::mat4(1.0f);
@@ -589,13 +592,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-GLuint loadCubemap(std::vector<std::string> faces) {
-    GLuint textureID;
+unsigned int loadCubemap(std::vector<std::string> faces) {
+    unsigned int textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width, height, nrChannels;
-    for (GLuint i = 0; i < faces.size(); i++) {
+    for (unsigned int i = 0; i < faces.size(); i++) {
         unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,

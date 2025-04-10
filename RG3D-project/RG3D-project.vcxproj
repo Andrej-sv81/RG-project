@@ -153,6 +153,14 @@
     <ClInclude Include="headers\shader.h" />
     <ClInclude Include="headers\stb_image.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\bottom_control.png" />
+    <Image Include="textures\signature.png" />
+    <Image Include="textures\top_control.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\WeirdScienceNbpRegular-qmBr.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\glfw.3.4.0\build\native\glfw.targets" Condition="Exists('packages\glfw.3.4.0\build\native\glfw.targets')" />
