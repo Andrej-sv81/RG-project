@@ -31,9 +31,9 @@
 
 using namespace std;
 //  1. 
-//  2. ucitaj planete i pozicije
-//  3. ucitaj asteroide i pozicije
-//  4. randomizuj rotacije
+//  2. 
+//  3.
+//  4. 
 // 
 // 
 //  5. ucitaj dsahboard: gornji donji, crosshair, overlay
@@ -83,7 +83,7 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 40.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -270,15 +270,43 @@ int main(void)
     // -----------
     //Model ourModel("models/various-planets/planets.blend");
     std::vector<Planet> planets = {
-        { Model("models/planets/p1/Planets.obj"),   glm::vec3(0.0f, 0.0f, -12.0f),  glm::vec3(0.0f, 0.0f, 1.0f),    0.5f,   glm::vec3(1.0f) },
-        { Model("models/planets/p2/Planets.obj"),   glm::vec3(4.4f, 0.0f, 2.0f),    glm::vec3(0.7f, 1.0f, 0.0f),    1.0f,   glm::vec3(1.0f) },
-        { Model("models/planets/p3/Planets.obj"),   glm::vec3(0.4f, 4.5f, 0.0f),    glm::vec3(0.3f, 0.5f, 0.3f),    0.33f,  glm::vec3(3.5f) },
-        { Model("models/planets/p4/Planets.obj"),   glm::vec3(6.4f, 8.5f, 0.0f),    glm::vec3(0.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
-        { Model("models/planets/p5/Planets.obj"),   glm::vec3(8.4f, 3.5f, -2.0f),   glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
-        { Model("models/planets/p6/Planets.obj"),   glm::vec3(-8.4f, 1.5f, -12.0f), glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
-        { Model("models/planets/p7/Planets.obj"),   glm::vec3(-8.4f, 1.5f, 12.0f),  glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
-        { Model("models/planets/p8/Planets.obj"),   glm::vec3(3.4f, 6.5f, 9.0f),    glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
-        { Model("models/planets/p9/Planets.obj"),   glm::vec3(1.4f, -3.5f, 9.0f),   glm::vec3(1.8f, 0.2f, 0.1f),    0.5f,   glm::vec3(1.5f) },
+        // Planets
+        { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) },
+        { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) },
+        { Model("models/planets/p3/Planets.obj"),       glm::vec3(0.4f, 34.5f, 0.0f),       glm::normalize(glm::vec3(0.11f, 0.98f, -0.17f)),    0.09f,  glm::vec3(3.5f) },
+        { Model("models/planets/p4/Planets.obj"),       glm::vec3(-32.4f, -25.5f, 7.0f),    glm::normalize(glm::vec3(-0.75f, 0.43f, 0.50f)),    0.73f,  glm::vec3(4.5f) },
+        { Model("models/planets/p5/Planets.obj"),       glm::vec3(8.4f, -22.5f, -12.0f),    glm::normalize(glm::vec3(0.67f, 0.36f, -0.65f)),    0.26f,  glm::vec3(3.5f) },
+        { Model("models/planets/p6/Planets.obj"),       glm::vec3(-38.4f, 20.5f, -32.0f),   glm::normalize(glm::vec3(-0.21f, -0.97f, 0.10f)),   0.58f,  glm::vec3(4.5f) },
+        { Model("models/planets/p7/Planets.obj"),       glm::vec3(-8.4f, 1.5f, 17.0f),      glm::normalize(glm::vec3(0.46f, -0.17f, 0.87f)),    0.83f,  glm::vec3(3.5f) },
+        { Model("models/planets/p8/Planets.obj"),       glm::vec3(13.4f, 16.5f, -29.0f),    glm::normalize(glm::vec3(-0.31f, 0.63f, -0.71f)),   0.34f,  glm::vec3(5.5f) },
+        { Model("models/planets/p9/Planets.obj"),       glm::vec3(-20.4f, -3.5f, 49.0f),    glm::normalize(glm::vec3(0.81f, -0.49f, 0.31f)),    0.78f,  glm::vec3(4.0f) },
+
+        // Asteroids 
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(22.0f, 9.0f, -15.5f),     glm::normalize(glm::vec3(0.53f, -0.14f, 0.84f)),    0.74f,  glm::vec3(1.0f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(8.0f, 10.0f, -39.0f),     glm::normalize(glm::vec3(-0.65f, 0.26f, 0.71f)),    0.59f,  glm::vec3(2.0f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(17.0f, 17.0f, 4.5f),      glm::normalize(glm::vec3(0.23f, 0.67f, -0.71f)),    0.91f,  glm::vec3(1.6f) },
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-16.0f, 8.0f, 3.5f),      glm::normalize(glm::vec3(-0.44f, -0.77f, 0.45f)),   0.48f,  glm::vec3(0.7f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-12.0f, -20.0f, -2.0f),   glm::normalize(glm::vec3(0.28f, 0.78f, -0.37f)),    0.95f,  glm::vec3(1.0f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-18.0f, 7.0f, 5.4f),      glm::normalize(glm::vec3(0.88f, 0.28f,  0.57f)),    1.45f,  glm::vec3(0.4f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-15.0f, 5.0f, 5.4f),      glm::normalize(glm::vec3(-0.58f, 0.78f, -0.37f)),   1.55f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(-35.0f, -2.0f, -12.0f),   glm::normalize(glm::vec3(0.24f, -0.88f, -0.41f)),   0.76f,  glm::vec3(1.6f) },
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-10.0f, 29.0f, -10.0f),   glm::normalize(glm::vec3(0.71f, -0.50f, 0.49f)),    0.38f,  glm::vec3(1.0f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-12.0f, 26.0f, -11.4f),   glm::normalize(glm::vec3(-0.58f, 0.78f, -0.37f)),   1.55f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(-7.0f, 26.0f, -12.0f),    glm::normalize(glm::vec3(0.24f, -0.88f, -0.41f)),   1.76f,  glm::vec3(0.4f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-5.0f, 5.0f, 8.0f),       glm::normalize(glm::vec3(-0.14f, 0.93f, -0.34f)),   0.64f,  glm::vec3(1.2f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(0.0f, 8.0f, 5.0f),        glm::normalize(glm::vec3(-0.94f, 0.03f,  0.74f)),   1.74f,  glm::vec3(0.6f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(4.0f, 0.0f, 15.0f),       glm::normalize(glm::vec3(-0.63f, 0.41f, 0.65f)),    0.71f,  glm::vec3(1.0f) },
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-4.0f, 18.0f, -29.0f),    glm::normalize(glm::vec3(0.52f, -0.65f, -0.55f)),   1.92f,  glm::vec3(1.0f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(20.0f, -12.0f, -3.0f),    glm::normalize(glm::vec3(-0.41f, -0.16f, 0.34f)),   1.58f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(23.0f, -12.0f, -2.0f),    glm::normalize(glm::vec3(0.71f, 0.56f, 0.27f)),     3.58f,  glm::vec3(0.5f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(20.0f, -15.0f, -1.6f),    glm::normalize(glm::vec3(-0.41f, -0.26f, 0.67f)),   4.58f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(22.0f, -9.0f, -2.2f),     glm::normalize(glm::vec3(0.41f, 0.66f, -0.87f)),    0.58f,  glm::vec3(0.9f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(22.0f, -16.0f, -2.0f),    glm::normalize(glm::vec3(-0.91f, -0.96f, 0.87f)),   2.58f,  glm::vec3(0.4f) },
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-15.0f, -4.0f, 33.0f),    glm::normalize(glm::vec3(-0.41f, -0.16f, 0.34f)),   1.58f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(-18.0f, -1.0f, 35.0f),    glm::normalize(glm::vec3(0.71f, 0.56f, 0.27f)),     3.58f,  glm::vec3(0.5f) },
+        { Model("models/asteroids/a3/Asteroids.obj"),   glm::vec3(-16.0f, -6.0f, 32.6f),    glm::normalize(glm::vec3(-0.41f, -0.26f, 0.67f)),   4.58f,  glm::vec3(0.3f) },
+        { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-14.0f, 1.0f, 36.2f),     glm::normalize(glm::vec3(0.41f, 0.66f, -0.87f)),    0.58f,  glm::vec3(0.9f) },
+        { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-19.0f, -3.0f, 34.0f),    glm::normalize(glm::vec3(-0.91f, -0.96f, 0.87f)),   2.58f,  glm::vec3(0.4f) },
     };
 
     
@@ -319,7 +347,7 @@ int main(void)
         ourShader.use();
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 200.0f);
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("projection", projection);
         ourShader.setMat4("view", view);
