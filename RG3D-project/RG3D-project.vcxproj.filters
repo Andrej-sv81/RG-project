@@ -42,7 +42,7 @@
     <None Include="shaders\text.vert">
       <Filter>Source Files\ShaderFiles</Filter>
     </None>
-    <None Include="shaders\texture.vert">
+    <None Include="shaders\texture.frag">
       <Filter>Source Files\ShaderFiles</Filter>
     </None>
     <None Include="shaders\window.frag">
@@ -83,6 +83,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\top_control.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\crosshair.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

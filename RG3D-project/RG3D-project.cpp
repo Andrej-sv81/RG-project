@@ -36,7 +36,7 @@ using namespace std;
 //  4. 
 // 
 // 
-//  5. ucitaj dsahboard: gornji donji, crosshair, overlay
+//  5. 
 // 
 // 
 //  6. selekcija planete
@@ -46,7 +46,9 @@ using namespace std;
 // 
 //  10.prikazivanje teksta
 //  11.resetovanje igre
-//  12.detalji
+//  12.detalji i komentari u kodu
+// 
+// 
 //  13.dodatno
 
 
@@ -243,10 +245,97 @@ int main(void)
          1.0f, -1.0f,  1.0f
     };
 
+    unsigned int stride = (2 + 2) * sizeof(float);
+
+    float vertices[] =
+    {
+        //Pos          //Tex
+        -1.0f,  1.0f,    0.0f, 1.0f, // Top-left
+        -1.0f, -1.0f,    0.0f, 0.0f, // Bottom-left
+         1.0f, -1.0f,    1.0f, 0.0f, // Bottom-right
+         1.0f,  1.0f,    1.0f, 1.0f  // Top-right
+    };
+
+    float signatureVertices[] = {
+        //Pos             //Tex
+         0.33f,  -0.75f,    0.0f, 1.0f, // Top-left
+         0.33f,  -0.98f,    0.0f, 0.0f, // Bottom-left
+         0.63f,  -0.98f,    1.0f, 0.0f, // Bottom-right
+         0.63f,  -0.75f,    1.0f, 1.0f  // Top-right
+    };
+
+    float crosshairVertices[] = {
+        //Pos          //Tex
+        -0.14f,  0.20f,    0.0f, 1.0f, // Top-left
+        -0.14f, -0.20f,    0.0f, 0.0f, // Bottom-left
+         0.14f, -0.20f,    1.0f, 0.0f, // Bottom-right
+         0.14f,  0.20f,    1.0f, 1.0f  // Top-right
+    };
+
+    unsigned int indices[] = {
+    0,1,3,
+    1,2,3
+    };
+
+    unsigned int VAO[6];
+    glGenVertexArrays(6, VAO);
+    unsigned int VBO[6];
+    glGenBuffers(6, VBO);
+    unsigned int EBO[4];
+    glGenBuffers(4, EBO);
+
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(signatureVertices), signatureVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[3]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
 
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
+
     glBindVertexArray(skyboxVAO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
@@ -255,20 +344,21 @@ int main(void)
     glBindVertexArray(0);
 
 
-    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader("shaders/model.vert", "shaders/model.frag");
+    Shader modelShader("shaders/model.vert", "shaders/model.frag");
 	Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+	Shader controlShader("shaders/dashboard.vert", "shaders/dashboard.frag");
+	Shader textureShader("shaders/dashboard.vert", "shaders/texture.frag");
+	Shader overlayShader("shaders/window.vert", "shaders/window.frag");
+
     // load models
     // -----------
-    //Model ourModel("models/various-planets/planets.blend");
     std::vector<Planet> planets = {
         // Planets
         { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) },
@@ -309,6 +399,14 @@ int main(void)
         { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-19.0f, -3.0f, 34.0f),    glm::normalize(glm::vec3(-0.91f, -0.96f, 0.87f)),   2.58f,  glm::vec3(0.4f) },
     };
 
+    //std::vector<Planet> planets;
+    //planets.assign(models.begin(), models.begin() + 11);
+
+    unsigned bottom_control_tex = loadImageToTexture("textures/bottom_control.png");
+    unsigned top_control_tex = loadImageToTexture("textures/top_control.png");
+    unsigned signature = loadImageToTexture("textures/signature.png");
+	unsigned crosshair = loadImageToTexture("textures/crosshair.png");
+
     
     std::vector<std::string> faces = {
         "textures/skybox/right.png",
@@ -318,9 +416,36 @@ int main(void)
         "textures/skybox/front.png",
         "textures/skybox/back.png"
     };
+
     unsigned int cubemapTexture = loadCubemap(faces);
     skyboxShader.use();
     glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, bottom_control_tex);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, top_control_tex);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, signature);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, crosshair);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    controlShader.use();
+    unsigned bottomTexLoc = glGetUniformLocation(controlShader.ID, "bottomTex");
+    unsigned topTexLoc = glGetUniformLocation(controlShader.ID, "topTex");
+    glUniform1i(bottomTexLoc, 1);
+    glUniform1i(topTexLoc, 2);
 
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -344,13 +469,13 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // don't forget to enable shader before setting uniforms
-        ourShader.use();
+        modelShader.use();
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 200.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
+        modelShader.setMat4("projection", projection);
+        modelShader.setMat4("view", view);
 
 
         glDepthFunc(GL_LEQUAL);
@@ -364,16 +489,58 @@ int main(void)
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
 
-        ourShader.use();
+        modelShader.use();
         // render the loaded model
         for (Planet& planet : planets) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, planet.position);
             model = glm::rotate(model, (float)glfwGetTime() * planet.rotationSpeed, planet.rotationAxis);
             model = glm::scale(model, planet.scale);
-            ourShader.setMat4("model", model);
-            planet.model.Draw(ourShader);
+            modelShader.setMat4("model", model);
+            planet.model.Draw(modelShader);
         }
+
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        //overlay
+        textureShader.use();
+        glUniform1i(glGetUniformLocation(textureShader.ID, "sampTex"), 4);
+        glBindVertexArray(VAO[2]);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, crosshair);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(VAO[3]);
+        overlayShader.use();
+        unsigned colorLoc = glGetUniformLocation(overlayShader.ID, "overlay");
+        glUniform3f(colorLoc, 0.5f, 0.8f, 1.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glDisable(GL_BLEND);
+
+        //kontrolna tabla
+        glBindVertexArray(VAO[0]);
+		controlShader.use();
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, bottom_control_tex);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, top_control_tex);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        //potpis
+        textureShader.use();
+        unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
+        glUniform1i(signatureLoc, 3);
+        glBindVertexArray(VAO[1]);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, signature);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+        glEnable(GL_DEPTH_TEST);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -385,6 +552,12 @@ int main(void)
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
+    glDeleteBuffers(4, EBO);
+    glDeleteBuffers(6, VBO);
+    glDeleteVertexArrays(6, VAO);
+    glDeleteProgram(controlShader.ID);
+    glDeleteProgram(modelShader.ID);
+    glDeleteProgram(skyboxShader.ID);
 
     glfwTerminate();
     return 0;
@@ -551,7 +724,6 @@ void renderText(unsigned int shader, string text, float x, float y, float scale,
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
 void capFPS()
 {
     auto currentTime = chrono::high_resolution_clock::now();
@@ -579,6 +751,10 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

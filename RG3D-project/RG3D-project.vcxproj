@@ -142,7 +142,7 @@
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\text.frag" />
     <None Include="shaders\text.vert" />
-    <None Include="shaders\texture.vert" />
+    <None Include="shaders\texture.frag" />
     <None Include="shaders\window.frag" />
     <None Include="shaders\window.vert" />
   </ItemGroup>
@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\bottom_control.png" />
+    <Image Include="textures\crosshair.png" />
     <Image Include="textures\signature.png" />
     <Image Include="textures\top_control.png" />
   </ItemGroup>
