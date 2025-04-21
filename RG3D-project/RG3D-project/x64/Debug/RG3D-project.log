@@ -1,4 +1,4 @@
 ﻿  RG3D-project.cpp
-C:\Users\User\Documents\GitHub\RG-project\RG3D-project\RG3D-project.cpp(209,33): warning C4838: conversion from 'FT_Pos' to 'unsigned int' requires a narrowing conversion
-C:\Users\User\Documents\GitHub\RG-project\RG3D-project\RG3D-project.cpp(604,17): warning C4102: 'std': unreferenced label
+C:\Users\User\Documents\GitHub\RG-project\RG3D-project\RG3D-project.cpp(189,33): warning C4838: conversion from 'FT_Pos' to 'unsigned int' requires a narrowing conversion
+C:\Users\User\Documents\GitHub\RG-project\RG3D-project\RG3D-project.cpp(584,17): warning C4102: 'std': unreferenced label
   RG3D-project.vcxproj -> C:\Users\User\Documents\GitHub\RG-project\RG3D-project\x64\Debug\RG3D-project.exe

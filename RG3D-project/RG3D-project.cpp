@@ -30,28 +30,8 @@
 #include "headers/model.h"
 
 using namespace std;
-//  1. 
-//  2. 
-//  3.
-//  4. 
-// 
-// 
-//  5. 
-// 
-// 
-//  6.
-//  7.
-//  8. 
-//  9.
-// 
-//  10.
-//  11.
-// 
-// 
-//  12.detalji i komentari u kodu
-//  13.dodatno
-
-
+//todo cleanup code and add comments
+//todo find spacestation model - optional
 
 unsigned int compileShader(GLenum type, const char* source);
 unsigned int createShader(const char* vsSource, const char* fsSource);
@@ -386,15 +366,15 @@ int main(void)
     // -----------
     std::vector<Planet> models = {
         // Planets
-        { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) ,   "p1"},
-        { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) ,   "p2"},
-        { Model("models/planets/p3/Planets.obj"),       glm::vec3(0.4f, 34.5f, 0.0f),       glm::normalize(glm::vec3(0.11f, 0.98f, -0.17f)),    0.09f,  glm::vec3(3.5f) ,   "p3"},
-        { Model("models/planets/p4/Planets.obj"),       glm::vec3(-32.4f, -25.5f, 7.0f),    glm::normalize(glm::vec3(-0.75f, 0.43f, 0.50f)),    0.73f,  glm::vec3(4.5f) ,   "p4"},
-        { Model("models/planets/p5/Planets.obj"),       glm::vec3(8.4f, -22.5f, -12.0f),    glm::normalize(glm::vec3(0.67f, 0.36f, -0.65f)),    0.26f,  glm::vec3(3.5f) ,   "p5"},
-        { Model("models/planets/p6/Planets.obj"),       glm::vec3(-38.4f, 20.5f, -32.0f),   glm::normalize(glm::vec3(-0.21f, -0.97f, 0.10f)),   0.58f,  glm::vec3(4.5f) ,   "p6"},
-        { Model("models/planets/p7/Planets.obj"),       glm::vec3(-8.4f, 1.5f, 17.0f),      glm::normalize(glm::vec3(0.46f, -0.17f, 0.87f)),    0.83f,  glm::vec3(3.5f) ,   "p7"},
-        { Model("models/planets/p8/Planets.obj"),       glm::vec3(13.4f, 16.5f, -29.0f),    glm::normalize(glm::vec3(-0.31f, 0.63f, -0.71f)),   0.34f,  glm::vec3(5.5f) ,   "p8"},
-        { Model("models/planets/p9/Planets.obj"),       glm::vec3(-20.4f, -3.5f, 49.0f),    glm::normalize(glm::vec3(0.81f, -0.49f, 0.31f)),    0.78f,  glm::vec3(4.0f) ,   "p9"},
+        { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) ,   "Echo Earth"},
+        { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) ,   "Frost One Foxtrot"},
+        { Model("models/planets/p3/Planets.obj"),       glm::vec3(0.4f, 34.5f, 0.0f),       glm::normalize(glm::vec3(0.11f, 0.98f, -0.17f)),    0.09f,  glm::vec3(3.5f) ,   "Magma Mike Zero"},
+        { Model("models/planets/p4/Planets.obj"),       glm::vec3(-32.4f, -25.5f, 7.0f),    glm::normalize(glm::vec3(-0.75f, 0.43f, 0.50f)),    0.73f,  glm::vec3(4.5f) ,   "Snowstorm One"},
+        { Model("models/planets/p5/Planets.obj"),       glm::vec3(8.4f, -22.5f, -12.0f),    glm::normalize(glm::vec3(0.67f, 0.36f, -0.65f)),    0.26f,  glm::vec3(3.5f) ,   "Bravo Veldt"},
+        { Model("models/planets/p6/Planets.obj"),       glm::vec3(-38.4f, 20.5f, -32.0f),   glm::normalize(glm::vec3(-0.21f, -0.97f, 0.10f)),   0.58f,  glm::vec3(4.5f) ,   "Desert Delta"},
+        { Model("models/planets/p7/Planets.obj"),       glm::vec3(-8.4f, 1.5f, 17.0f),      glm::normalize(glm::vec3(0.46f, -0.17f, 0.87f)),    0.83f,  glm::vec3(3.5f) ,   "Romeo Ruin"},
+        { Model("models/planets/p8/Planets.obj"),       glm::vec3(13.4f, 16.5f, -29.0f),    glm::normalize(glm::vec3(-0.31f, 0.63f, -0.71f)),   0.34f,  glm::vec3(5.5f) ,   "Obsidian Veil Omega"},
+        { Model("models/planets/p9/Planets.obj"),       glm::vec3(-20.4f, -3.5f, 49.0f),    glm::normalize(glm::vec3(0.81f, -0.49f, 0.31f)),    0.78f,  glm::vec3(4.0f) ,   "Tidefall Tango-12"},
 
         // Asteroids 
         { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(22.0f, 9.0f, -15.5f),     glm::normalize(glm::vec3(0.53f, -0.14f, 0.84f)),    0.74f,  glm::vec3(1.0f) },
