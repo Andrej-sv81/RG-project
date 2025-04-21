@@ -39,9 +39,9 @@ using namespace std;
 //  5. 
 // 
 // 
-//  6. selekcija planete
-//  7. distanca od planete
-//  8. istrazivanje planete i game over
+//  6.
+//  7.
+//  8. 
 //  9. unistenje od asteroid
 // 
 //  10.prikazivanje teksta
@@ -62,6 +62,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 void capFPS();
 GLuint loadCubemap(std::vector<std::string> faces);
+bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
+    const glm::vec3& sphereCenter, float sphereRadius, float& t);
+
 
 struct Planet {
     Model model;
@@ -70,7 +73,18 @@ struct Planet {
     float rotationSpeed;
     glm::vec3 scale;
     float radius;
+	bool explored = false;
+
+    void computeRaduis() {
+        radius = 0.0f;
+        for (Vertex& v : model.meshes[0].vertices)
+            radius = glm::max(radius, glm::distance(glm::vec3(0), v.Position) * scale.x); // Find max distance
+    }
 };
+std::vector<Planet> planets;
+std::vector<Planet> asteroids;
+Planet* selectPlanet(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
+float distanceToPlanet(glm::vec3 planetPos, glm::vec3 cameraPos, float radius);
 
 struct Character {
     unsigned int TextureID;  // ID handle of the glyph texture
@@ -118,7 +132,7 @@ int main(void)
     unsigned int wWidth = SCR_WIDTH;
     unsigned int wHeight = SCR_HEIGHT;
     const char wTitle[] = "3D NLO";
-    window = glfwCreateWindow(wWidth, wHeight, wTitle, glfwGetPrimaryMonitor(), NULL);
+    window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL , NULL);
     if (window == NULL)
     {
         cout << "Prozor nije napravljen! :(\n";
@@ -359,7 +373,7 @@ int main(void)
 
     // load models
     // -----------
-    std::vector<Planet> planets = {
+    std::vector<Planet> models = {
         // Planets
         { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) },
         { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) },
@@ -398,9 +412,11 @@ int main(void)
         { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(-14.0f, 1.0f, 36.2f),     glm::normalize(glm::vec3(0.41f, 0.66f, -0.87f)),    0.58f,  glm::vec3(0.9f) },
         { Model("models/asteroids/a2/Asteroids.obj"),   glm::vec3(-19.0f, -3.0f, 34.0f),    glm::normalize(glm::vec3(-0.91f, -0.96f, 0.87f)),   2.58f,  glm::vec3(0.4f) },
     };
-
-    //std::vector<Planet> planets;
-    //planets.assign(models.begin(), models.begin() + 11);
+	for (Planet& planet : models) {
+		planet.computeRaduis();
+	}
+    planets.assign(models.begin(), models.begin() + 9);
+    asteroids.assign(models.begin() + 9, models.end());
 
     unsigned bottom_control_tex = loadImageToTexture("textures/bottom_control.png");
     unsigned top_control_tex = loadImageToTexture("textures/top_control.png");
@@ -452,6 +468,8 @@ int main(void)
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
+    bool gameEnd = false;
+
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
@@ -491,7 +509,7 @@ int main(void)
 
         modelShader.use();
         // render the loaded model
-        for (Planet& planet : planets) {
+        for (Planet& planet : models) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, planet.position);
             model = glm::rotate(model, (float)glfwGetTime() * planet.rotationSpeed, planet.rotationAxis);
@@ -522,26 +540,66 @@ int main(void)
 
         //kontrolna tabla
         glBindVertexArray(VAO[0]);
-		controlShader.use();
+        controlShader.use();
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, bottom_control_tex);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, top_control_tex);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        //potpis
-        textureShader.use();
-        unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
-        glUniform1i(signatureLoc, 3);
-        glBindVertexArray(VAO[1]);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, signature);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        if (!gameEnd) {
+            //potpis
+            textureShader.use();
+            unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
+            glUniform1i(signatureLoc, 3);
+            glBindVertexArray(VAO[1]);
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, signature);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        }
 
         glEnable(GL_DEPTH_TEST);
 
 
+        // planet selection
+        glm::vec3 rayOrigin = camera.Position; // FPS camera position
+        glm::vec3 rayDirection = glm::normalize(camera.Front); // Forward vector
+		Planet* selected = nullptr;
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            selected = selectPlanet(rayOrigin, rayDirection);
+            if (selected) {
+                std::cout << "Selected planet: " << selected->position.x << selected->position.y << selected->position.z << std::endl;
+                std::cout << selected->explored << std::endl;
+                std:cout << distanceToPlanet(selected->position, rayOrigin, selected->radius) << std::endl;
+                        
+            }
+        }
+
+        // planet exploration
+        if (selected) {
+			float distance = distanceToPlanet(selected->position, rayOrigin, selected->radius);
+            if (distance < 3.0f) {
+				selected->explored = true;
+            }
+        }
+
+        // asteroid collision
+        for (Planet& asteroid : asteroids) {
+            float distance = distanceToPlanet(asteroid.position, rayOrigin, asteroid.radius);
+            if (distance < 0.5f) {
+                gameEnd = true;
+            }
+        }
+
+        // check for end of game
+        int explCounter = 0;
+		for (Planet& planet : planets) {
+            if (planet.explored) {
+                explCounter++;
+            }
+		}
+        if (explCounter >= planets.size()) gameEnd = true;
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -821,4 +879,43 @@ unsigned int loadCubemap(std::vector<std::string> faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     return textureID;
+}
+
+bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
+    const glm::vec3& sphereCenter, float sphereRadius, float& t) {
+    glm::vec3 oc = rayOrigin - sphereCenter;
+    float a = glm::dot(rayDir, rayDir);
+    float b = 2.0f * glm::dot(oc, rayDir);
+    float c = glm::dot(oc, oc) - sphereRadius * sphereRadius;
+    float discriminant = b * b - 4 * a * c;
+
+    if (discriminant < 0) return false;  // No intersection
+
+    t = (-b - sqrt(discriminant)) / (2.0f * a);  // Closest hit
+    return (t > 0);
+}
+
+Planet* selectPlanet(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
+    Planet* selectedPlanet = nullptr;
+    float closestT = FLT_MAX;
+
+    for (Planet& planet : planets) {
+        float t;
+        if (rayIntersectsSphere(rayOrigin, rayDirection, planet.position, planet.radius, t)) {
+            if (t < closestT) {
+                closestT = t;
+                selectedPlanet = &planet;
+            }
+        }
+    }
+    return selectedPlanet; // Returns nullptr if no planet was hit
+}
+
+float distanceToPlanet(glm::vec3 planetPos, glm::vec3 cameraPos, float radius) {
+    glm::vec3 diff = cameraPos - planetPos;
+    float centerDistance = glm::length(diff);
+    float surfaceDistance = centerDistance - radius;
+    surfaceDistance = glm::max(0.0f, surfaceDistance);
+
+    return surfaceDistance;
 }
