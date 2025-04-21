@@ -42,13 +42,13 @@ using namespace std;
 //  6.
 //  7.
 //  8. 
-//  9. unistenje od asteroid
+//  9.
 // 
-//  10.prikazivanje teksta
-//  11.resetovanje igre
+//  10.
+//  11.
+// 
+// 
 //  12.detalji i komentari u kodu
-// 
-// 
 //  13.dodatno
 
 
@@ -59,7 +59,7 @@ static unsigned loadImageToTexture(const char* filePath);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, bool alive);
 void capFPS();
 GLuint loadCubemap(std::vector<std::string> faces);
 bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
@@ -72,6 +72,7 @@ struct Planet {
     glm::vec3 rotationAxis;
     float rotationSpeed;
     glm::vec3 scale;
+    string name;
     float radius;
 	bool explored = false;
 
@@ -92,7 +93,7 @@ struct Character {
     glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
     unsigned int Advance;    // Offset to advance to next glyph
 };
-void renderText(unsigned int shader, string text, float x, float y, float scale, glm::vec3 color, map<char, Character>& Characters, unsigned int VAO, unsigned int VBO);
+void renderText(Shader shader, string text, float x, float y, float scale, glm::vec3 color, map<char, Character>& Characters, unsigned int VAO, unsigned int VBO);
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -132,7 +133,7 @@ int main(void)
     unsigned int wWidth = SCR_WIDTH;
     unsigned int wHeight = SCR_HEIGHT;
     const char wTitle[] = "3D NLO";
-    window = glfwCreateWindow(wWidth, wHeight, wTitle, NULL , NULL);
+    window = glfwCreateWindow(wWidth, wHeight, wTitle, glfwGetPrimaryMonitor(), NULL);
     if (window == NULL)
     {
         cout << "Prozor nije napravljen! :(\n";
@@ -345,6 +346,13 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(VAO[4]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    glEnableVertexAttribArray(0);
+
 
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
@@ -355,8 +363,10 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    
     glBindVertexArray(0);
-
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // configure global opengl state
     // -----------------------------
@@ -370,20 +380,21 @@ int main(void)
 	Shader controlShader("shaders/dashboard.vert", "shaders/dashboard.frag");
 	Shader textureShader("shaders/dashboard.vert", "shaders/texture.frag");
 	Shader overlayShader("shaders/window.vert", "shaders/window.frag");
+	Shader textShader("shaders/text.vert", "shaders/text.frag");
 
     // load models
     // -----------
     std::vector<Planet> models = {
         // Planets
-        { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) },
-        { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) },
-        { Model("models/planets/p3/Planets.obj"),       glm::vec3(0.4f, 34.5f, 0.0f),       glm::normalize(glm::vec3(0.11f, 0.98f, -0.17f)),    0.09f,  glm::vec3(3.5f) },
-        { Model("models/planets/p4/Planets.obj"),       glm::vec3(-32.4f, -25.5f, 7.0f),    glm::normalize(glm::vec3(-0.75f, 0.43f, 0.50f)),    0.73f,  glm::vec3(4.5f) },
-        { Model("models/planets/p5/Planets.obj"),       glm::vec3(8.4f, -22.5f, -12.0f),    glm::normalize(glm::vec3(0.67f, 0.36f, -0.65f)),    0.26f,  glm::vec3(3.5f) },
-        { Model("models/planets/p6/Planets.obj"),       glm::vec3(-38.4f, 20.5f, -32.0f),   glm::normalize(glm::vec3(-0.21f, -0.97f, 0.10f)),   0.58f,  glm::vec3(4.5f) },
-        { Model("models/planets/p7/Planets.obj"),       glm::vec3(-8.4f, 1.5f, 17.0f),      glm::normalize(glm::vec3(0.46f, -0.17f, 0.87f)),    0.83f,  glm::vec3(3.5f) },
-        { Model("models/planets/p8/Planets.obj"),       glm::vec3(13.4f, 16.5f, -29.0f),    glm::normalize(glm::vec3(-0.31f, 0.63f, -0.71f)),   0.34f,  glm::vec3(5.5f) },
-        { Model("models/planets/p9/Planets.obj"),       glm::vec3(-20.4f, -3.5f, 49.0f),    glm::normalize(glm::vec3(0.81f, -0.49f, 0.31f)),    0.78f,  glm::vec3(4.0f) },
+        { Model("models/planets/p1/Planets.obj"),       glm::vec3(0.0f, 0.0f, -52.0f),      glm::normalize(glm::vec3(0.32f, -0.88f, 0.34f)),    0.21f,  glm::vec3(3.0f) ,   "p1"},
+        { Model("models/planets/p2/Planets.obj"),       glm::vec3(34.4f, 0.0f, 9.0f),       glm::normalize(glm::vec3(-0.59f, 0.22f, 0.77f)),    0.67f,  glm::vec3(9.0f) ,   "p2"},
+        { Model("models/planets/p3/Planets.obj"),       glm::vec3(0.4f, 34.5f, 0.0f),       glm::normalize(glm::vec3(0.11f, 0.98f, -0.17f)),    0.09f,  glm::vec3(3.5f) ,   "p3"},
+        { Model("models/planets/p4/Planets.obj"),       glm::vec3(-32.4f, -25.5f, 7.0f),    glm::normalize(glm::vec3(-0.75f, 0.43f, 0.50f)),    0.73f,  glm::vec3(4.5f) ,   "p4"},
+        { Model("models/planets/p5/Planets.obj"),       glm::vec3(8.4f, -22.5f, -12.0f),    glm::normalize(glm::vec3(0.67f, 0.36f, -0.65f)),    0.26f,  glm::vec3(3.5f) ,   "p5"},
+        { Model("models/planets/p6/Planets.obj"),       glm::vec3(-38.4f, 20.5f, -32.0f),   glm::normalize(glm::vec3(-0.21f, -0.97f, 0.10f)),   0.58f,  glm::vec3(4.5f) ,   "p6"},
+        { Model("models/planets/p7/Planets.obj"),       glm::vec3(-8.4f, 1.5f, 17.0f),      glm::normalize(glm::vec3(0.46f, -0.17f, 0.87f)),    0.83f,  glm::vec3(3.5f) ,   "p7"},
+        { Model("models/planets/p8/Planets.obj"),       glm::vec3(13.4f, 16.5f, -29.0f),    glm::normalize(glm::vec3(-0.31f, 0.63f, -0.71f)),   0.34f,  glm::vec3(5.5f) ,   "p8"},
+        { Model("models/planets/p9/Planets.obj"),       glm::vec3(-20.4f, -3.5f, 49.0f),    glm::normalize(glm::vec3(0.81f, -0.49f, 0.31f)),    0.78f,  glm::vec3(4.0f) ,   "p9"},
 
         // Asteroids 
         { Model("models/asteroids/a1/Asteroids.obj"),   glm::vec3(22.0f, 9.0f, -15.5f),     glm::normalize(glm::vec3(0.53f, -0.14f, 0.84f)),    0.74f,  glm::vec3(1.0f) },
@@ -463,12 +474,22 @@ int main(void)
     glUniform1i(bottomTexLoc, 1);
     glUniform1i(topTexLoc, 2);
 
+	textShader.use();
+    glm::mat4 projection = glm::ortho(0.0f, (float)wWidth, 0.0f, (float)wHeight);
+    unsigned int projectionLoc = glGetUniformLocation(textShader.ID, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUseProgram(0);
+
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
     bool gameEnd = false;
+    bool alive = true;
+    string state = "Success";
+    Planet* selected = nullptr;
+    float distanceToSelected = 0.0f;
 
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
@@ -479,14 +500,26 @@ int main(void)
 
         // input
         // -----
-        processInput(window);
+        processInput(window, alive);
+       
+        // reset game
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+            camera.Position = glm::vec3(0.0f, 0.0f, 40.0f);
+            alive = true;
+            gameEnd = false;
+            selected = nullptr;
+            distanceToSelected = 0.0f;
+            state = "Success";
+            for (Planet& planet : planets) {
+                planet.explored = false;
+            }
+        }
 
         // render
         // ------
         glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // don't forget to enable shader before setting uniforms
         modelShader.use();
 
         // view/projection transformations
@@ -494,7 +527,6 @@ int main(void)
         glm::mat4 view = camera.GetViewMatrix();
         modelShader.setMat4("projection", projection);
         modelShader.setMat4("view", view);
-
 
         glDepthFunc(GL_LEQUAL);
         skyboxShader.use();
@@ -533,12 +565,16 @@ int main(void)
         glBindVertexArray(VAO[3]);
         overlayShader.use();
         unsigned colorLoc = glGetUniformLocation(overlayShader.ID, "overlay");
-        glUniform3f(colorLoc, 0.5f, 0.8f, 1.0f);
+        glm::vec3 col = glm::vec3(0.5f, 0.8f, 1.0f);
+        if (!alive) {
+            col = glm::vec3(0.8f, 0.4f, 0.4f);
+        }
+        glUniform3f(colorLoc, col.x, col.y, col.z);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glDisable(GL_BLEND);
 
-        //kontrolna tabla
+        // dashboard
         glBindVertexArray(VAO[0]);
         controlShader.use();
         glActiveTexture(GL_TEXTURE1);
@@ -546,24 +582,19 @@ int main(void)
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, top_control_tex);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        if (!gameEnd) {
-            //potpis
-            textureShader.use();
-            unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
-            glUniform1i(signatureLoc, 3);
-            glBindVertexArray(VAO[1]);
-            glActiveTexture(GL_TEXTURE3);
-            glBindTexture(GL_TEXTURE_2D, signature);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
 
-        glEnable(GL_DEPTH_TEST);
-
+        //  signature
+        textureShader.use();
+        unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
+        glUniform1i(signatureLoc, 3);
+        glBindVertexArray(VAO[1]);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, signature);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // planet selection
         glm::vec3 rayOrigin = camera.Position; // FPS camera position
         glm::vec3 rayDirection = glm::normalize(camera.Front); // Forward vector
-		Planet* selected = nullptr;
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             selected = selectPlanet(rayOrigin, rayDirection);
@@ -577,8 +608,8 @@ int main(void)
 
         // planet exploration
         if (selected) {
-			float distance = distanceToPlanet(selected->position, rayOrigin, selected->radius);
-            if (distance < 3.0f) {
+            distanceToSelected = distanceToPlanet(selected->position, rayOrigin, selected->radius);
+            if (distanceToSelected < 3.0f) {
 				selected->explored = true;
             }
         }
@@ -587,7 +618,7 @@ int main(void)
         for (Planet& asteroid : asteroids) {
             float distance = distanceToPlanet(asteroid.position, rayOrigin, asteroid.radius);
             if (distance < 0.5f) {
-                gameEnd = true;
+                alive = false;
             }
         }
 
@@ -599,6 +630,77 @@ int main(void)
             }
 		}
         if (explCounter >= planets.size()) gameEnd = true;
+        
+        // render text 
+        ostringstream oss;
+        oss << std::fixed << std::setprecision(3) << distanceToSelected * 100;
+        string displayDistance = oss.str();
+
+        textShader.use();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        if (!gameEnd && alive) {
+            renderText(textShader,
+                "TARGET:",
+                730.0f, 140.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+            renderText(textShader,
+                selected ? selected->name : "No Target",
+                890.0f, 140.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+
+            renderText(textShader,
+                "DISTANCE:",
+                730.0f, 100.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+            renderText(textShader,
+                displayDistance,
+                890.0f, 100.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+
+            renderText(textShader,
+                "STATUS:",
+                730.0f, 60.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+            renderText(textShader,
+                selected ? selected->explored ? "Explored" : "Unknown" : "No Target",
+                890.0f, 60.0f, 1.0f,
+                glm::vec3(1.0f, 1.0f, 1.0f),
+                Characters,
+                VAO[4], VBO[4]);
+        }
+        else {
+            glm::vec3 colR = glm::vec3(1.0f, 1.0f, 1.0f);
+            float x = 810.f;
+            if (!alive) {
+                state = "Fail";
+                colR = glm::vec3(1.0f, 0.0f, 0.0f);
+                x = 850.0f;
+            }
+            renderText(textShader,
+                "MISSION: " + state,
+                x, 90.0f, 1.5f,
+                colR,
+                Characters,
+                VAO[4], VBO[4]);
+        }
+
+		glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindVertexArray(0);
+        glUseProgram(0);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -738,12 +840,12 @@ static unsigned loadImageToTexture(const char* filePath) {
     }
 }
 
-void renderText(unsigned int shader, string text, float x, float y, float scale, glm::vec3 color, map<char, Character>& Characters, unsigned int VAO, unsigned int VBO) {
+void renderText(Shader shader, string text, float x, float y, float scale, glm::vec3 color, map<char, Character>& Characters, unsigned int VAO, unsigned int VBO) {
     // activate corresponding render state	
-    glUseProgram(shader);
+    shader.use();
     glActiveTexture(GL_TEXTURE10);
-    glUniform3f(glGetUniformLocation(shader, "textColor"), color.x, color.y, color.z);
-    glUniform1i(glGetUniformLocation(shader, "text"), 10);
+    glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
+    glUniform1i(glGetUniformLocation(shader.ID, "text"), 10);
     glBindVertexArray(VAO);
 
     // iterate through all characters
@@ -796,23 +898,25 @@ void capFPS()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, bool alive)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.ProcessKeyboard(DOWN, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        camera.ProcessKeyboard(UP, deltaTime);
+    if (alive) {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            camera.ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            camera.ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            camera.ProcessKeyboard(RIGHT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            camera.ProcessKeyboard(DOWN, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            camera.ProcessKeyboard(UP, deltaTime);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
