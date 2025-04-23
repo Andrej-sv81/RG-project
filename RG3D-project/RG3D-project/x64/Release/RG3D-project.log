@@ -1,0 +1,7 @@
+﻿  RG3D-project.cpp
+C:\Users\User\Documents\GitHub\RG-project\RG3D-project\RG3D-project.cpp(193,33): warning C4838: conversion from 'FT_Pos' to 'unsigned int' requires a narrowing conversion
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 1131 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  RG3D-project.vcxproj -> C:\Users\User\Documents\GitHub\RG-project\RG3D-project\x64\Release\RG3D-project.exe
