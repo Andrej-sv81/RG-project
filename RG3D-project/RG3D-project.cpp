@@ -30,11 +30,9 @@
 #include "headers/model.h"
 
 using namespace std;
-//todo cleanup code and add comments
-//todo find spacestation model - optional
 
-unsigned int compileShader(GLenum type, const char* source);
-unsigned int createShader(const char* vsSource, const char* fsSource);
+// function declarations
+// ---------------------
 static unsigned loadImageToTexture(const char* filePath);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -45,7 +43,8 @@ GLuint loadCubemap(std::vector<std::string> faces);
 bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
     const glm::vec3& sphereCenter, float sphereRadius, float& t);
 
-
+// Planet struct and functions
+// ---------------------------
 struct Planet {
     Model model;
     glm::vec3 position;
@@ -67,6 +66,8 @@ std::vector<Planet> asteroids;
 Planet* selectPlanet(const glm::vec3& rayOrigin, const glm::vec3& rayDirection);
 float distanceToPlanet(glm::vec3 planetPos, glm::vec3 cameraPos, float radius);
 
+// Text rendering struct
+// ---------------------
 struct Character {
     unsigned int TextureID;  // ID handle of the glyph texture
     glm::ivec2   Size;       // Size of glyph
@@ -76,16 +77,19 @@ struct Character {
 void renderText(Shader shader, string text, float x, float y, float scale, glm::vec3 color, map<char, Character>& Characters, unsigned int VAO, unsigned int VBO);
 
 // settings
+// ---------
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 // camera
+// ------
 Camera camera(glm::vec3(0.0f, 0.0f, 40.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
+// ------
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -194,7 +198,11 @@ int main(void)
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
+    // vertices
+    // --------
 
+    // skybox
+	// ------
     float skyboxVertices[] = {
         // Positions          
         -1.0f,  1.0f, -1.0f,
@@ -242,6 +250,8 @@ int main(void)
 
     unsigned int stride = (2 + 2) * sizeof(float);
 
+    // dashboard
+    // ---------
     float vertices[] =
     {
         //Pos          //Tex
@@ -251,6 +261,8 @@ int main(void)
          1.0f,  1.0f,    1.0f, 1.0f  // Top-right
     };
 
+	// signature
+    // ---------
     float signatureVertices[] = {
         //Pos             //Tex
          0.33f,  -0.75f,    0.0f, 1.0f, // Top-left
@@ -259,6 +271,8 @@ int main(void)
          0.63f,  -0.75f,    1.0f, 1.0f  // Top-right
     };
 
+    // crosshair
+    // ---------
     float crosshairVertices[] = {
         //Pos          //Tex
         -0.14f,  0.20f,    0.0f, 1.0f, // Top-left
@@ -272,13 +286,17 @@ int main(void)
     1,2,3
     };
 
-    unsigned int VAO[6];
-    glGenVertexArrays(6, VAO);
-    unsigned int VBO[6];
-    glGenBuffers(6, VBO);
-    unsigned int EBO[4];
-    glGenBuffers(4, EBO);
+    // generate buffers
+    // ----------------
+    unsigned int VAO[4];
+    glGenVertexArrays(4, VAO);
+    unsigned int VBO[4];
+    glGenBuffers(4, VBO);
+    unsigned int EBO[3];
+    glGenBuffers(3, EBO);
 
+    // dashboard
+    // ---------
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -290,7 +308,8 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
+    // signature
+    // ---------
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(signatureVertices), signatureVertices, GL_STATIC_DRAW);
@@ -302,7 +321,8 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
+    // crosshair
+    // ---------
     glBindVertexArray(VAO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
@@ -314,7 +334,8 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
+    // overlay
+    // -------
     glBindVertexArray(VAO[3]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -326,6 +347,8 @@ int main(void)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    // text
+    // ----
     glBindVertexArray(VAO[4]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
@@ -333,7 +356,8 @@ int main(void)
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
 
-
+    // skybox
+    // ------
     unsigned int skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -406,15 +430,20 @@ int main(void)
 	for (Planet& planet : models) {
 		planet.computeRaduis();
 	}
+	// two seperate vectors for planets and asteroids collisions
+    // ---------------------------------------------------------
     planets.assign(models.begin(), models.begin() + 9);
     asteroids.assign(models.begin() + 9, models.end());
 
+	// load textures
+	// -------------
     unsigned bottom_control_tex = loadImageToTexture("textures/bottom_control.png");
     unsigned top_control_tex = loadImageToTexture("textures/top_control.png");
     unsigned signature = loadImageToTexture("textures/signature.png");
 	unsigned crosshair = loadImageToTexture("textures/crosshair.png");
 
-    
+	// load cubemap texture (skybox)
+	// --------------------------
     std::vector<std::string> faces = {
         "textures/skybox/right.png",
         "textures/skybox/left.png",
@@ -424,6 +453,8 @@ int main(void)
         "textures/skybox/back.png"
     };
 
+    // setup uniforms and mipmaps
+	// --------------------------
     unsigned int cubemapTexture = loadCubemap(faces);
     skyboxShader.use();
     glUniform1i(glGetUniformLocation(skyboxShader.ID, "skybox"), 0);
@@ -465,13 +496,18 @@ int main(void)
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ RENDER LOOP - PETLJA ZA CRTANJE +++++++++++++++++++++++++++++++++++++++++++++++++
 
+    // game variables
+	// --------------
     bool gameEnd = false;
     bool alive = true;
     string state = "Success";
     Planet* selected = nullptr;
     float distanceToSelected = 0.0f;
 
+    // loop
+	// -----
     while (!glfwWindowShouldClose(window)) {
+
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -483,6 +519,7 @@ int main(void)
         processInput(window, alive);
        
         // reset game
+		// ----------
         if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
             camera.Position = glm::vec3(0.0f, 0.0f, 40.0f);
             alive = true;
@@ -500,16 +537,19 @@ int main(void)
         glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        modelShader.use();
-
         // view/projection transformations
+		// --------------------------------
+        modelShader.use();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 200.0f);
         glm::mat4 view = camera.GetViewMatrix();
         modelShader.setMat4("projection", projection);
         modelShader.setMat4("view", view);
+        
+		// render the skybox first
+        // ----------------------
+        skyboxShader.use();
 
         glDepthFunc(GL_LEQUAL);
-        skyboxShader.use();
         glm::mat4 viewSky = glm::mat4(glm::mat3(camera.GetViewMatrix()));
         skyboxShader.setMat4("view", viewSky);
         skyboxShader.setMat4("projection", projection);
@@ -519,8 +559,10 @@ int main(void)
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
 
+        // render planets and asteroids
+		// ----------------------------
         modelShader.use();
-        // render the loaded model
+        
         for (Planet& planet : models) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, planet.position);
@@ -530,20 +572,27 @@ int main(void)
             planet.model.Draw(modelShader);
         }
 
+        // depth and blend setup for overlay
+        // ---------------------------------
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        //overlay
+        // crosshair
+        // ---------
         textureShader.use();
+
         glUniform1i(glGetUniformLocation(textureShader.ID, "sampTex"), 4);
         glBindVertexArray(VAO[2]);
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, crosshair);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        glBindVertexArray(VAO[3]);
+		// overlay
+		// -------
         overlayShader.use();
+
+        glBindVertexArray(VAO[3]);
         unsigned colorLoc = glGetUniformLocation(overlayShader.ID, "overlay");
         glm::vec3 col = glm::vec3(0.5f, 0.8f, 1.0f);
         if (!alive) {
@@ -555,16 +604,20 @@ int main(void)
         glDisable(GL_BLEND);
 
         // dashboard
-        glBindVertexArray(VAO[0]);
+		// ---------
         controlShader.use();
+
+        glBindVertexArray(VAO[0]);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, bottom_control_tex);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, top_control_tex);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //  signature
+        // signature
+		// ----------
         textureShader.use();
+
         unsigned signatureLoc = glGetUniformLocation(textureShader.ID, "sampTex");
         glUniform1i(signatureLoc, 3);
         glBindVertexArray(VAO[1]);
@@ -573,20 +626,16 @@ int main(void)
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // planet selection
-        glm::vec3 rayOrigin = camera.Position; // FPS camera position
-        glm::vec3 rayDirection = glm::normalize(camera.Front); // Forward vector
+		// ----------------
+        glm::vec3 rayOrigin = camera.Position; 
+        glm::vec3 rayDirection = glm::normalize(camera.Front);
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             selected = selectPlanet(rayOrigin, rayDirection);
-            if (selected) {
-                std::cout << "Selected planet: " << selected->position.x << selected->position.y << selected->position.z << std::endl;
-                std::cout << selected->explored << std::endl;
-                std:cout << distanceToPlanet(selected->position, rayOrigin, selected->radius) << std::endl;
-                        
-            }
         }
 
         // planet exploration
+		// ------------------
         if (selected) {
             distanceToSelected = distanceToPlanet(selected->position, rayOrigin, selected->radius);
             if (distanceToSelected < 3.0f) {
@@ -595,6 +644,7 @@ int main(void)
         }
 
         // asteroid collision
+		// ------------------
         for (Planet& asteroid : asteroids) {
             float distance = distanceToPlanet(asteroid.position, rayOrigin, asteroid.radius);
             if (distance < 0.5f) {
@@ -603,6 +653,7 @@ int main(void)
         }
 
         // check for end of game
+		// ---------------------
         int explCounter = 0;
 		for (Planet& planet : planets) {
             if (planet.explored) {
@@ -612,11 +663,13 @@ int main(void)
         if (explCounter >= planets.size()) gameEnd = true;
         
         // render text 
+		// -----------
         ostringstream oss;
         oss << std::fixed << std::setprecision(3) << distanceToSelected * 100;
         string displayDistance = oss.str();
 
         textShader.use();
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -692,95 +745,18 @@ int main(void)
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
-    glDeleteBuffers(4, EBO);
-    glDeleteBuffers(6, VBO);
-    glDeleteVertexArrays(6, VAO);
+    glDeleteBuffers(3, EBO);
+    glDeleteBuffers(4, VBO);
+    glDeleteVertexArrays(4, VAO);
     glDeleteProgram(controlShader.ID);
     glDeleteProgram(modelShader.ID);
     glDeleteProgram(skyboxShader.ID);
+    glDeleteProgram(textureShader.ID);
+    glDeleteProgram(overlayShader.ID);
+    glDeleteProgram(textShader.ID);
 
     glfwTerminate();
     return 0;
-}
-
-unsigned int compileShader(GLenum type, const char* source)
-{
-    //Uzima kod u fajlu na putanji "source", kompajlira ga i vraca sejder tipa "type"
-    //Citanje izvornog koda iz fajla
-    string content = "";
-    ifstream file(source);
-    stringstream ss;
-    if (file.is_open())
-    {
-        ss << file.rdbuf();
-        file.close();
-        cout << "Uspjesno procitao fajl sa putanje \"" << source << "\"!" << endl;
-    }
-    else {
-        ss << "";
-        cout << "Greska pri citanju fajla sa putanje \"" << source << "\"!" << endl;
-    }
-    string temp = ss.str();
-    const char* sourceCode = temp.c_str(); //Izvorni kod sejdera koji citamo iz fajla na putanji "source"
-
-    int shader = glCreateShader(type); //Napravimo prazan sejder odredjenog tipa (vertex ili fragment)
-
-    int success; //Da li je kompajliranje bilo uspjesno (1 - da)
-    char infoLog[512]; //Poruka o gresci (Objasnjava sta je puklo unutar sejdera)
-    glShaderSource(shader, 1, &sourceCode, NULL); //Postavi izvorni kod sejdera
-    glCompileShader(shader); //Kompajliraj sejder
-
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success); //Provjeri da li je sejder uspjesno kompajliran
-    if (success == GL_FALSE)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog); //Pribavi poruku o gresci
-        if (type == GL_VERTEX_SHADER)
-            printf("VERTEX");
-        else if (type == GL_FRAGMENT_SHADER)
-            printf("FRAGMENT");
-        printf(" sejder ima gresku! Greska: \n");
-        printf(infoLog);
-    }
-    return shader;
-}
-
-unsigned int createShader(const char* vsSource, const char* fsSource)
-{
-    //Pravi objedinjeni sejder program koji se sastoji od Vertex sejdera ciji je kod na putanji vsSource
-
-    unsigned int program; //Objedinjeni sejder
-    unsigned int vertexShader; //Verteks sejder (za prostorne podatke)
-    unsigned int fragmentShader; //Fragment sejder (za boje, teksture itd)
-
-    program = glCreateProgram(); //Napravi prazan objedinjeni sejder program
-
-    vertexShader = compileShader(GL_VERTEX_SHADER, vsSource); //Napravi i kompajliraj vertex sejder
-    fragmentShader = compileShader(GL_FRAGMENT_SHADER, fsSource); //Napravi i kompajliraj fragment sejder
-
-    //Zakaci verteks i fragment sejdere za objedinjeni program
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-
-    glLinkProgram(program); //Povezi ih u jedan objedinjeni sejder program
-    glValidateProgram(program); //Izvrsi provjeru novopecenog programa
-
-    int success;
-    char infoLog[512];
-    glGetProgramiv(program, GL_VALIDATE_STATUS, &success); //Slicno kao za sejdere
-    if (success == GL_FALSE)
-    {
-        glGetShaderInfoLog(program, 512, NULL, infoLog);
-        cout << "Objedinjeni sejder ima gresku! Greska: \n";
-        cout << infoLog << endl;
-    }
-
-    //Posto su kodovi sejdera u objedinjenom sejderu, oni pojedinacni programi nam ne trebaju, pa ih brisemo zarad ustede na memoriji
-    glDetachShader(program, vertexShader);
-    glDeleteShader(vertexShader);
-    glDetachShader(program, fragmentShader);
-    glDeleteShader(fragmentShader);
-
-    return program;
 }
 
 static unsigned loadImageToTexture(const char* filePath) {
