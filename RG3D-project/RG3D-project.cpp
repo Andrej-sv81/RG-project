@@ -288,12 +288,12 @@ int main(void)
 
     // generate buffers
     // ----------------
-    unsigned int VAO[4];
-    glGenVertexArrays(4, VAO);
-    unsigned int VBO[4];
-    glGenBuffers(4, VBO);
-    unsigned int EBO[3];
-    glGenBuffers(3, EBO);
+    unsigned int VAO[5];
+    glGenVertexArrays(5, VAO);
+    unsigned int VBO[5];
+    glGenBuffers(5, VBO);
+    unsigned int EBO[4];
+    glGenBuffers(4, EBO);
 
     // dashboard
     // ---------
@@ -745,9 +745,9 @@ int main(void)
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++ POSPREMANJE +++++++++++++++++++++++++++++++++++++++++++++++++
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
-    glDeleteBuffers(3, EBO);
-    glDeleteBuffers(4, VBO);
-    glDeleteVertexArrays(4, VAO);
+    glDeleteBuffers(4, EBO);
+    glDeleteBuffers(5, VBO);
+    glDeleteVertexArrays(5, VAO);
     glDeleteProgram(controlShader.ID);
     glDeleteProgram(modelShader.ID);
     glDeleteProgram(skyboxShader.ID);
