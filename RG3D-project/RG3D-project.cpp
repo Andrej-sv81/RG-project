@@ -674,6 +674,9 @@ int main(void)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         if (!gameEnd && alive) {
+
+            // TARGET: PlanetName
+            // ------------------
             renderText(textShader,
                 "TARGET:",
                 730.0f, 140.0f, 1.0f,
@@ -687,6 +690,8 @@ int main(void)
                 Characters,
                 VAO[4], VBO[4]);
 
+            // DISTANCE: 1000.00
+            // -----------------
             renderText(textShader,
                 "DISTANCE:",
                 730.0f, 100.0f, 1.0f,
@@ -700,6 +705,8 @@ int main(void)
                 Characters,
                 VAO[4], VBO[4]);
 
+            // STATUS: Unknown
+            // ---------------
             renderText(textShader,
                 "STATUS:",
                 730.0f, 60.0f, 1.0f,
@@ -714,6 +721,9 @@ int main(void)
                 VAO[4], VBO[4]);
         }
         else {
+
+            // MISION: Fail/Success
+            // --------------------
             glm::vec3 colR = glm::vec3(1.0f, 1.0f, 1.0f);
             float x = 810.f;
             if (!alive) {
@@ -735,8 +745,8 @@ int main(void)
         glBindVertexArray(0);
         glUseProgram(0);
         
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
+        // glfw: swap buffers and poll IO events
+        // -------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
 		capFPS();
@@ -914,6 +924,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
+// load cubemap texture and create mipmaps
+// ---------------------------------------
 unsigned int loadCubemap(std::vector<std::string> faces) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -941,6 +953,8 @@ unsigned int loadCubemap(std::vector<std::string> faces) {
     return textureID;
 }
 
+// intersection formula derived from parametrci ray equation and sphere equation
+// -----------------------------------------------------------------------------
 bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
     const glm::vec3& sphereCenter, float sphereRadius, float& t) {
     glm::vec3 oc = rayOrigin - sphereCenter;
@@ -955,6 +969,8 @@ bool rayIntersectsSphere(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
     return (t > 0);
 }
 
+// loop over all planets and select the closes one pierced by the ray
+// ------------------------------------------------------------------
 Planet* selectPlanet(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     Planet* selectedPlanet = nullptr;
     float closestT = FLT_MAX;
@@ -971,6 +987,8 @@ Planet* selectPlanet(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) 
     return selectedPlanet; // Returns nullptr if no planet was hit
 }
 
+// distance between a planet and the camera | if we enter the planet the distance becomes negative and we set it to 0
+// ------------------------------------------------------------------------------------------------------------------
 float distanceToPlanet(glm::vec3 planetPos, glm::vec3 cameraPos, float radius) {
     glm::vec3 diff = cameraPos - planetPos;
     float centerDistance = glm::length(diff);
