@@ -1,3 +1,6 @@
+//Mitrovic Andrej
+//SV81-2021
+
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
@@ -885,7 +888,7 @@ void processInput(GLFWwindow* window, bool alive)
     }
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes - for debugging
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
